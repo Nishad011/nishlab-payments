@@ -135,6 +135,8 @@ input:focus-visible, select:focus-visible, textarea:focus-visible,
 .choice input:disabled + .choice-body { opacity: .45; cursor: not-allowed; }
 .choice:has(input:disabled):hover .choice-body { border-color: var(--line); }
 .choice-title { font-weight: 600; display: block; }
+.enq #plans, .enq #e-plan, .enq #sec-plan .hint, .enq .payonly { display: none; }
+.price.ask { font-size: 13px; letter-spacing: .02em; }
 .choice-sub { font-size: 14px; color: var(--muted); display: block; }
 .price {
   font-family: var(--display); font-weight: 800; font-size: 24px; letter-spacing: -.02em;
@@ -266,11 +268,18 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
       <label class="choice"><input type="radio" name="course" value="ac"><span class="choice-body"><span><span class="choice-title">AutoCAD Master Course</span><span class="choice-sub">2D drafting, annotation, layouts, plotting</span></span><span class="price">₹4,000</span></span></label>
       <label class="choice"><input type="radio" name="course" value="acsw"><span class="choice-body"><span><span class="choice-title">Combined AutoCAD + SolidWorks</span><span class="choice-sub">Both master courses in one enrolment</span></span><span class="price">₹7,080</span></span></label>
       <label class="choice"><input type="radio" name="course" value="swan"><span class="choice-body"><span><span class="choice-title">Combined SolidWorks + ANSYS</span><span class="choice-sub">Design in SolidWorks, then analyse in ANSYS</span></span><span class="price">₹7,080</span></span></label>
+      <label class="choice"><input type="radio" name="course" value="ansys"><span class="choice-body"><span><span class="choice-title">ANSYS Workbench Professional</span><span class="choice-sub">Structural and thermal simulation</span></span><span class="price ask">Ask fee</span></span></label>
+      <label class="choice"><input type="radio" name="course" value="catia"><span class="choice-body"><span><span class="choice-title">CATIA V5</span><span class="choice-sub">Part, assembly and drawing design</span></span><span class="price ask">Ask fee</span></span></label>
+      <label class="choice"><input type="radio" name="course" value="creo"><span class="choice-body"><span><span class="choice-title">Creo</span><span class="choice-sub">Parametric 3D CAD modelling</span></span><span class="price ask">Ask fee</span></span></label>
+      <label class="choice"><input type="radio" name="course" value="f360"><span class="choice-body"><span><span class="choice-title">Fusion 360</span><span class="choice-sub">3D modelling, assemblies and drawings</span></span><span class="price ask">Ask fee</span></span></label>
+      <label class="choice"><input type="radio" name="course" value="keyshot"><span class="choice-body"><span><span class="choice-title">KeyShot</span><span class="choice-sub">Product rendering and visuals</span></span><span class="price ask">Ask fee</span></span></label>
+      <label class="choice"><input type="radio" name="course" value="python"><span class="choice-body"><span><span class="choice-title">Python</span><span class="choice-sub">Python programming for engineers</span></span><span class="price ask">Ask fee</span></span></label>
+      <label class="choice"><input type="radio" name="course" value="vba"><span class="choice-body"><span><span class="choice-title">Excel VBA</span><span class="choice-sub">Excel automation with VBA</span></span><span class="price ask">Ask fee</span></span></label>
     </fieldset>
     <p class="err" id="e-course"></p>
   </section>
 
-  <section class="step" aria-labelledby="h3s">
+  <section class="step" id="sec-plan" aria-labelledby="h3s">
     <h2 id="h3s"><span class="num">03</span> Payment plan</h2>
     <fieldset class="choices" id="plans" aria-describedby="e-plan">
       <legend class="legend" style="padding:0;margin-bottom:10px">How will you pay?</legend>
@@ -344,9 +353,9 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
     </div>
   </section>
 
-  <section class="step" aria-labelledby="h5s">
+  <section class="step" id="sec-pay" aria-labelledby="h5s">
     <h2 id="h5s"><span class="num">05</span> Pay by QR and upload proof</h2>
-    <div class="payqr">
+    <div class="payqr payonly">
       <div class="qrframe">
         <img id="qr" src="qr.png" alt="NISHLAB CREATIONS payment QR code">
         <p class="qr-missing" id="qr-missing" hidden>The payment QR code will appear here.</p>
@@ -358,7 +367,7 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
         <p class="hint" id="upi-line" hidden>UPI ID: <strong id="upi-id"></strong></p>
       </div>
     </div>
-    <div class="grid" style="margin-top:20px">
+    <div class="grid payonly" style="margin-top:20px">
       <div class="field full">
         <label for="shot">Payment screenshot</label>
         <input type="file" id="shot" name="shot" accept="image/*">
@@ -372,11 +381,11 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
       </div>
       <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
     </div>
-    <label class="check" for="agree" style="margin-top:18px">
+    <label class="check payonly" for="agree" style="margin-top:18px">
       <input type="checkbox" id="agree" name="agree">
       <span>I confirm the details above are correct and that I have paid the amount shown. I understand my seat is confirmed after NISHLAB CREATIONS verifies my payment, and that the part-payment balance is due 20 days after the first payment.</span>
     </label>
-    <p class="err" id="e-agree"></p>
+    <p class="err payonly" id="e-agree"></p>
     <div class="actions">
       <button type="submit" class="primary" id="submit">Submit enrollment →</button>
       <button type="reset" class="ghost">Clear form</button>
@@ -421,7 +430,14 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
     sw:   { name: "SolidWorks Master Course", full: 6000, part: [4000, 2000] },
     ac:   { name: "AutoCAD Master Course", full: 4000, part: null },
     acsw: { name: "Combined AutoCAD + SolidWorks", full: 7080, part: null },
-    swan: { name: "Combined SolidWorks + ANSYS", full: 7080, part: null }
+    swan: { name: "Combined SolidWorks + ANSYS", full: 7080, part: null },
+    ansys:  { name: "ANSYS Workbench Professional", enquiry: true },
+    catia:  { name: "CATIA V5", enquiry: true },
+    creo:   { name: "Creo", enquiry: true },
+    f360:   { name: "Fusion 360", enquiry: true },
+    keyshot:{ name: "KeyShot", enquiry: true },
+    python: { name: "Python", enquiry: true },
+    vba:    { name: "Excel VBA", enquiry: true }
   };
   var $ = function (id) { return document.getElementById(id); };
   var form = $("enroll");
@@ -460,11 +476,23 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
     var partInput = $("plan-part");
     var due = $("due");
     if (!c) {
+      form.classList.remove("enq");
+      $("h5s").lastChild.nodeValue = " Pay by QR and upload proof";
       $("f-course").textContent = "Not selected";
       $("f-now").textContent = "–"; $("f-total").textContent = "–";
       $("f-later").hidden = true; $("f-later-label").hidden = true; $("f-note").hidden = true;
       due.textContent = "Choose a course and plan"; due.className = "due pending";
       setQr("qr.png");
+      return;
+    }
+    form.classList.toggle("enq", !!c.enquiry);
+    $("h5s").lastChild.nodeValue = c.enquiry ? " Send your details" : " Pay by QR and upload proof";
+    if (c.enquiry) {
+      $("f-course").textContent = c.name;
+      $("f-now").textContent = "Fee on request"; $("f-total").textContent = "Shared on WhatsApp";
+      $("f-later").hidden = true; $("f-later-label").hidden = true;
+      $("f-note").textContent = "The fee for this course is confirmed on WhatsApp. Submit your details and we will reply with the fee and payment details.";
+      $("f-note").hidden = false;
       return;
     }
     $("p-full").textContent = inr(c.full);
@@ -556,19 +584,20 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
     if (val("city").length < 2) mark(fail("city", "Enter your city and country."));
     if (!val("qual")) mark(fail("qual", "Select your current status."));
     if (!checked("course")) mark(fail("course", "Select a course.", "courses"));
-    if (!checked("plan")) mark(fail("plan", "Select a payment plan.", "plans"));
+    var enq = !!(COURSES[checked("course")] && COURSES[checked("course")].enquiry);
+    if (!enq && !checked("plan")) mark(fail("plan", "Select a payment plan.", "plans"));
     if (!val("level")) mark(fail("level", "Select your experience level."));
     if (!val("software")) mark(fail("software", "Select your software status."));
     if (!val("slot")) mark(fail("slot", "Select a class time."));
-    if (!($("shot").files && $("shot").files[0])) mark(fail("shot", "Upload your payment screenshot.", "shot"));
-    if (!$("agree").checked) mark(fail("agree", "Tick the box to confirm.", "agree"));
+    if (!enq && !($("shot").files && $("shot").files[0])) mark(fail("shot", "Upload your payment screenshot.", "shot"));
+    if (!enq && !$("agree").checked) mark(fail("agree", "Tick the box to confirm.", "agree"));
     return first;
   }
 
   /* ---- summary for the WhatsApp fallback ---- */
   function buildSummary() {
     var c = COURSES[checked("course")], plan = checked("plan");
-    var pay = plan === "part"
+    var pay = c.enquiry ? "Fee to be confirmed on WhatsApp" : plan === "part"
       ? "Part payment: " + inr(c.part[0]) + " now + " + inr(c.part[1]) + " within 20 days (total " + inr(c.full) + ")"
       : "One-time payment: " + inr(c.full);
     var lines = [
@@ -618,6 +647,10 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
     if (firstBad) {
       var el = $(firstBad);
       if (el) { el.scrollIntoView({ block: "center" }); if (el.focus && el.tagName !== "FIELDSET") el.focus(); }
+      return;
+    }
+    if (COURSES[checked("course")] && COURSES[checked("course")].enquiry) {
+      showFallback("The fee for this course is confirmed on WhatsApp. Send your details below and we will reply with the fee and payment details.");
       return;
     }
     if (!SUBMIT_URL) {
