@@ -264,18 +264,24 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
     <h2 id="h2s"><span class="num">02</span> Choose your course</h2>
     <fieldset class="choices" id="courses" aria-describedby="e-course">
       <legend class="legend" style="padding:0;margin-bottom:10px">Course</legend>
-      <label class="choice"><input type="radio" name="course" value="sw"><span class="choice-body"><span><span class="choice-title">SolidWorks Master Course</span><span class="choice-sub">Part modelling, assemblies, drawings, sheet metal, surfacing</span></span><span class="price">₹6,000</span></span></label>
-      <label class="choice"><input type="radio" name="course" value="ac"><span class="choice-body"><span><span class="choice-title">AutoCAD Master Course</span><span class="choice-sub">2D drafting, annotation, layouts, plotting</span></span><span class="price">₹4,000</span></span></label>
-      <label class="choice"><input type="radio" name="course" value="acsw"><span class="choice-body"><span><span class="choice-title">Combined AutoCAD + SolidWorks</span><span class="choice-sub">Both master courses in one enrolment</span></span><span class="price">₹7,080</span></span></label>
-      <label class="choice"><input type="radio" name="course" value="swan"><span class="choice-body"><span><span class="choice-title">Combined SolidWorks + ANSYS</span><span class="choice-sub">Design in SolidWorks, then analyse in ANSYS</span></span><span class="price">₹7,080</span></span></label>
-      <label class="choice"><input type="radio" name="course" value="ansys"><span class="choice-body"><span><span class="choice-title">ANSYS Workbench Professional</span><span class="choice-sub">Structural and thermal simulation</span></span><span class="price ask">Ask fee</span></span></label>
-      <label class="choice"><input type="radio" name="course" value="catia"><span class="choice-body"><span><span class="choice-title">CATIA V5</span><span class="choice-sub">Part, assembly and drawing design</span></span><span class="price ask">Ask fee</span></span></label>
-      <label class="choice"><input type="radio" name="course" value="creo"><span class="choice-body"><span><span class="choice-title">Creo</span><span class="choice-sub">Parametric 3D CAD modelling</span></span><span class="price ask">Ask fee</span></span></label>
-      <label class="choice"><input type="radio" name="course" value="f360"><span class="choice-body"><span><span class="choice-title">Fusion 360</span><span class="choice-sub">3D modelling, assemblies and drawings</span></span><span class="price ask">Ask fee</span></span></label>
-      <label class="choice"><input type="radio" name="course" value="keyshot"><span class="choice-body"><span><span class="choice-title">KeyShot</span><span class="choice-sub">Product rendering and visuals</span></span><span class="price ask">Ask fee</span></span></label>
-      <label class="choice"><input type="radio" name="course" value="python"><span class="choice-body"><span><span class="choice-title">Python</span><span class="choice-sub">Python programming for engineers</span></span><span class="price ask">Ask fee</span></span></label>
-      <label class="choice"><input type="radio" name="course" value="vba"><span class="choice-body"><span><span class="choice-title">Excel VBA</span><span class="choice-sub">Excel automation with VBA</span></span><span class="price ask">Ask fee</span></span></label>
+            <label class="choice"><input type="radio" name="course" value="ac"><span class="choice-body"><span><span class="choice-title">AutoCAD Complete</span><span class="choice-sub">2D + 3D and rendering · 24 hrs · 12 days</span></span><span class="price">₹5,999</span></span></label>
+      <label class="choice"><input type="radio" name="course" value="sw"><span class="choice-body"><span><span class="choice-title">SolidWorks Complete</span><span class="choice-sub">Essentials + Advanced · 48 hrs · 24 days</span></span><span class="price">₹7,999</span></span></label>
+      <label class="choice"><input type="radio" name="course" value="ansys"><span class="choice-body"><span><span class="choice-title">ANSYS Complete</span><span class="choice-sub">APDL + Workbench + CFD · 36 hrs · 18 days</span></span><span class="price">₹11,999</span></span></label>
+      <label class="choice"><input type="radio" name="course" value="catia"><span class="choice-body"><span><span class="choice-title">CATIA V5</span><span class="choice-sub">Part, assembly, surface · 18 days</span></span><span class="price">₹7,999</span></span></label>
+      <label class="choice"><input type="radio" name="course" value="creo"><span class="choice-body"><span><span class="choice-title">Creo Parametric</span><span class="choice-sub">Parametric modeling · 48 hrs · 24 days</span></span><span class="price">₹9,999</span></span></label>
+      <label class="choice"><input type="radio" name="course" value="f360"><span class="choice-body"><span><span class="choice-title">Fusion 360</span><span class="choice-sub">3D modeling and CAM basics · 30 hrs · 15 days</span></span><span class="price">₹5,999</span></span></label>
+      <label class="choice"><input type="radio" name="course" value="keyshot"><span class="choice-body"><span><span class="choice-title">KeyShot</span><span class="choice-sub">Product rendering · short course</span></span><span class="price">₹3,999</span></span></label>
+      <label class="choice"><input type="radio" name="course" value="python"><span class="choice-body"><span><span class="choice-title">Python for Engineers</span><span class="choice-sub">Automation and data analysis · short course</span></span><span class="price">₹3,999</span></span></label>
+      <label class="choice"><input type="radio" name="course" value="vba"><span class="choice-body"><span><span class="choice-title">Advanced Excel / VBA</span><span class="choice-sub">Dashboards and automation · short course</span></span><span class="price">₹3,999</span></span></label>
+      <label class="choice"><input type="radio" name="course" value="combo"><span class="choice-body"><span><span class="choice-title">Any 2 courses (one-time payment)</span><span class="choice-sub">Pick any two courses and pay one combined fee</span></span><span class="price">₹7,080</span></span></label>
     </fieldset>
+    <div class="combo-pick" id="combo-pick" hidden>
+      <div class="grid">
+        <div class="field"><label for="combo1">First course</label><select id="combo1" name="combo1"><option value="">Select</option><option value="ac">AutoCAD Complete</option><option value="sw">SolidWorks Complete</option><option value="ansys">ANSYS Complete</option><option value="catia">CATIA V5</option><option value="creo">Creo Parametric</option><option value="f360">Fusion 360</option><option value="keyshot">KeyShot</option><option value="python">Python for Engineers</option><option value="vba">Advanced Excel / VBA</option></select></div>
+        <div class="field"><label for="combo2">Second course</label><select id="combo2" name="combo2"><option value="">Select</option><option value="ac">AutoCAD Complete</option><option value="sw">SolidWorks Complete</option><option value="ansys">ANSYS Complete</option><option value="catia">CATIA V5</option><option value="creo">Creo Parametric</option><option value="f360">Fusion 360</option><option value="keyshot">KeyShot</option><option value="python">Python for Engineers</option><option value="vba">Advanced Excel / VBA</option></select></div>
+      </div>
+      <p class="err" id="e-combo"></p>
+    </div>
     <p class="err" id="e-course"></p>
   </section>
 
@@ -284,7 +290,7 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
     <fieldset class="choices" id="plans" aria-describedby="e-plan">
       <legend class="legend" style="padding:0;margin-bottom:10px">How will you pay?</legend>
       <label class="choice"><input type="radio" name="plan" value="full"><span class="choice-body"><span><span class="choice-title">One-time payment</span><span class="choice-sub">Pay the full fee now</span></span><span class="price" id="p-full">–</span></span></label>
-      <label class="choice"><input type="radio" name="plan" value="part" id="plan-part"><span class="choice-body"><span><span class="choice-title">Part payment</span><span class="choice-sub" id="part-sub">Available for the SolidWorks Master Course only</span></span><span class="price" id="p-part">–</span></span></label>
+      <label class="choice"><input type="radio" name="plan" value="part" id="plan-part"><span class="choice-body"><span><span class="choice-title">Part payment</span><span class="choice-sub" id="part-sub">Not available. Pay the full fee in one payment.</span></span><span class="price" id="p-part">–</span></span></label>
     </fieldset>
     <p class="err" id="e-plan"></p>
 
@@ -383,7 +389,7 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
     </div>
     <label class="check payonly" for="agree" style="margin-top:18px">
       <input type="checkbox" id="agree" name="agree">
-      <span>I confirm the details above are correct and that I have paid the amount shown. I understand my seat is confirmed after NISHLAB CREATIONS verifies my payment, and that the part-payment balance is due 20 days after the first payment.</span>
+      <span>I confirm the details above are correct and that I have paid the amount shown. I understand my seat is confirmed after NISHLAB CREATIONS verifies my payment,.</span>
     </label>
     <p class="err payonly" id="e-agree"></p>
     <div class="actions">
@@ -427,18 +433,22 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
   var UPI_ID = "nishadevdesign@oksbi";
 
   var COURSES = {
-    sw:   { name: "SolidWorks Master Course", full: 6000, part: [4000, 2000] },
-    ac:   { name: "AutoCAD Master Course", full: 4000, part: null },
-    acsw: { name: "Combined AutoCAD + SolidWorks", full: 7080, part: null },
-    swan: { name: "Combined SolidWorks + ANSYS", full: 7080, part: null },
-    ansys:  { name: "ANSYS Workbench Professional", enquiry: true },
-    catia:  { name: "CATIA V5", enquiry: true },
-    creo:   { name: "Creo", enquiry: true },
-    f360:   { name: "Fusion 360", enquiry: true },
-    keyshot:{ name: "KeyShot", enquiry: true },
-    python: { name: "Python", enquiry: true },
-    vba:    { name: "Excel VBA", enquiry: true }
+    ac:     { name: "AutoCAD Complete", full: 5999, part: null },
+    sw:     { name: "SolidWorks Complete", full: 7999, part: null },
+    ansys:  { name: "ANSYS Complete", full: 11999, part: null },
+    catia:  { name: "CATIA V5", full: 7999, part: null },
+    creo:   { name: "Creo Parametric", full: 9999, part: null },
+    f360:   { name: "Fusion 360", full: 5999, part: null },
+    keyshot:{ name: "KeyShot", full: 3999, part: null },
+    python: { name: "Python for Engineers", full: 3999, part: null },
+    vba:    { name: "Advanced Excel / VBA", full: 3999, part: null },
+    combo:  { name: "Any 2 courses", full: 7080, part: null }
   };
+  var comboName = function (c) {
+    var a = COURSES[val("combo1")], b = COURSES[val("combo2")];
+    return a && b ? "Combo: " + a.name + " + " + b.name : c.name;
+  };
+
   var $ = function (id) { return document.getElementById(id); };
   var form = $("enroll");
   var inr = function (n) { return "₹" + n.toLocaleString("en-IN"); };
@@ -504,10 +514,10 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
       partInput.disabled = true;
       if (partInput.checked) partInput.checked = false;
       $("p-part").textContent = "–";
-      $("part-sub").textContent = "Not available for this course. Pay in full.";
+      $("part-sub").textContent = "Pay the full fee in one payment.";
     }
     var plan = checked("plan");
-    $("f-course").textContent = c.name;
+    $("f-course").textContent = checked("course") === "combo" ? comboName(c) : c.name;
     $("f-total").textContent = inr(c.full);
     var later = $("f-later"), laterLabel = $("f-later-label"), note = $("f-note");
     if (plan === "part" && c.part) {
@@ -526,10 +536,13 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
       due.textContent = "Choose a plan"; due.className = "due pending";
     }
     /* The second QR has the Rs 7,080 amount filled in, so it is only used for the combined courses paid in full. */
-    var combined = (checked("course") === "acsw" || checked("course") === "swan") && plan === "full";
+    var combined = checked("course") === "combo" && plan === "full";
     setQr(combined ? "qr-7080.png" : "qr.png");
   }
-  form.addEventListener("change", updateFee);
+  form.addEventListener("change", function () {
+    $("combo-pick").hidden = checked("course") !== "combo";
+    updateFee();
+  });
 
   /* ---- screenshot picker ---- */
   var MAX_FILE = 15 * 1024 * 1024;
@@ -584,7 +597,11 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
     if (val("city").length < 2) mark(fail("city", "Enter your city and country."));
     if (!val("qual")) mark(fail("qual", "Select your current status."));
     if (!checked("course")) mark(fail("course", "Select a course.", "courses"));
-    var enq = !!(COURSES[checked("course")] && COURSES[checked("course")].enquiry);
+    var enq = false;
+    if (checked("course") === "combo") {
+      if (!val("combo1") || !val("combo2")) mark(fail("combo", "Choose both courses.", "combo1"));
+      else if (val("combo1") === val("combo2")) mark(fail("combo", "Choose two different courses.", "combo2"));
+    }
     if (!enq && !checked("plan")) mark(fail("plan", "Select a payment plan.", "plans"));
     if (!val("level")) mark(fail("level", "Select your experience level."));
     if (!val("software")) mark(fail("software", "Select your software status."));
@@ -604,7 +621,7 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
       "NISHLAB CREATIONS – ENROLLMENT", "",
       "Name: " + val("name"), "WhatsApp: " + val("phone"), "Email: " + val("email"),
       "Location: " + val("city"), "Status: " + val("qual"), "",
-      "Course: " + c.name, "Payment: " + pay
+      "Course: " + (checked("course") === "combo" ? comboName(c) : c.name), "Payment: " + pay
     ];
     if (val("utr")) lines.push("UPI transaction ID: " + val("utr"));
     lines.push("", "CAD experience: " + val("level"), "Software: " + val("software"), "Preferred time (IST): " + val("slot"));
@@ -662,7 +679,7 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
     compress($("shot").files[0]).then(function (b64) {
       var payload = {
         clientId: clientId, name: val("name"), phone: val("phone"), email: val("email"), city: val("city"),
-        qual: val("qual"), course: checked("course"), plan: plan,
+        qual: val("qual"), course: checked("course"), combo1: val("combo1"), combo2: val("combo2"), plan: plan,
         level: val("level"), software: val("software"), slot: val("slot"),
         source: val("source"), goal: val("goal"), utr: val("utr"), shot: b64
       };
