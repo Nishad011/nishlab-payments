@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NISHLAB Enrollment Form</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Theme matches nishlabcreations.online: graphite dark, hot orange accent, steel blue secondary, mono labels, pill buttons.
+   Layout idea: one narrow column of numbered panels under a thin nav bar, like the site's course cards. */
+:root {
+  --bg: #0e1114;
+  --panel: #151a1f;
+  --panel-2: #1c2228;
+  --line: #2a323b;
+  --text: #ece8e1;
+  --muted: #8d98a5;
+  --steel: #9fb3c8;
+  --hot: #ff6a1a;
+  --on-hot: #140800;
+  --good: #5fd39a;
+  --bad: #ff7b72;
+  --display: "Bricolage Grotesque", system-ui, sans-serif;
+  --body: "Instrument Sans", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+#bg { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; display: block; }
+.nav, .hero, main, footer { position: relative; z-index: 1; }
+.nav { background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(6px); }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.55;
+}
+.nav { border-bottom: 1px solid var(--line); }
+.nav-inner, .hero-inner, main { max-width: 760px; margin: 0 auto; }
+.nav-inner { display: flex; align-items: center; gap: 10px; padding: 14px 16px; }
+.logo { width: 26px; height: 26px; flex: none; }
+.wordmark { font-weight: 600; letter-spacing: .02em; text-transform: uppercase; font-size: 16px; }
+.hero { padding: 40px 16px 8px; }
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 14px;
+}
+h1 {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: clamp(40px, 9vw, 64px);
+  line-height: .98;
+  letter-spacing: -.045em;
+  margin: 0 0 16px;
+  text-wrap: balance;
+}
+h1 em { font-style: normal; color: var(--hot); }
+.lede { color: var(--muted); max-width: 56ch; margin: 0; }
+.lede strong { color: var(--text); font-weight: 600; }
+main { padding: 24px 16px 56px; }
+
+section.step {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 22px;
+  margin: 0 0 16px;
+}
+section.step > h2 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: -.02em;
+  margin: 0 0 16px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  text-wrap: balance;
+}
+.num {
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: .08em;
+  color: var(--hot);
+  font-variant-numeric: tabular-nums;
+}
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.full { grid-column: 1 / -1; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+label, .legend { font-weight: 600; font-size: 15px; }
+.opt { font-weight: 400; color: var(--muted); }
+input[type=text], input[type=tel], input[type=email], select, textarea {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 11px 12px;
+  width: 100%;
+}
+input::placeholder, textarea::placeholder { color: #5f6b78; }
+textarea { min-height: 80px; resize: vertical; }
+input:focus-visible, select:focus-visible, textarea:focus-visible,
+.choice input:focus-visible + .choice-body, button:focus-visible, a.btn:focus-visible, .check input:focus-visible {
+  outline: 2px solid var(--hot);
+  outline-offset: 2px;
+}
+.hint { font-size: 14px; color: var(--muted); margin: 0; }
+.err { font-size: 14px; color: var(--bad); margin: 0; }
+.invalid { border-color: var(--bad) !important; }
+
+.choices { display: grid; gap: 10px; border: 0; padding: 0; margin: 0; min-width: 0; }
+.choice { position: relative; display: block; cursor: pointer; }
+.choice input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+.choice-body {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
+  background: var(--panel-2);
+}
+.choice:hover .choice-body { border-color: var(--steel); }
+.choice input:checked + .choice-body {
+  border-color: var(--hot);
+  background: color-mix(in srgb, var(--hot) 10%, var(--panel-2));
+  box-shadow: inset 0 0 0 1px var(--hot);
+}
+.choice input:disabled + .choice-body { opacity: .45; cursor: not-allowed; }
+.choice:has(input:disabled):hover .choice-body { border-color: var(--line); }
+.choice-title { font-weight: 600; display: block; }
+.choice-sub { font-size: 14px; color: var(--muted); display: block; }
+.price {
+  font-family: var(--display); font-weight: 800; font-size: 24px; letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+
+.fee { border: 1px dashed var(--steel); border-radius: 12px; padding: 16px 18px; margin-top: 16px; background: var(--bg); }
+.fee dl { margin: 0; display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; font-variant-numeric: tabular-nums; }
+.fee dt { color: var(--muted); font-family: var(--mono); font-size: 13px; letter-spacing: .06em; text-transform: uppercase; align-self: center; }
+.fee dd { margin: 0; font-weight: 600; text-align: right; }
+.fee .total { display: contents; }
+.fee .total dt { color: var(--steel); }
+.fee .total dd { font-family: var(--display); font-weight: 800; font-size: 24px; letter-spacing: -.02em; color: var(--hot); }
+.note {
+  background: color-mix(in srgb, var(--hot) 12%, var(--bg)); color: var(--text);
+  border-left: 3px solid var(--hot); border-radius: 6px; padding: 10px 12px; font-size: 15px; margin: 14px 0 0;
+}
+
+.check { display: flex; gap: 12px; align-items: flex-start; font-weight: 400; font-size: 16px; }
+.check input { margin-top: 5px; width: 18px; height: 18px; flex: none; accent-color: var(--hot); }
+
+.actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
+button, a.btn {
+  font: inherit; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center;
+  border-radius: 999px; padding: 12px 24px; border: 1px solid var(--hot);
+  background: var(--hot); color: var(--on-hot); display: inline-block;
+}
+button.ghost, a.btn.ghost { background: transparent; color: var(--text); border-color: var(--line); }
+a.btn.ghost:hover { border-color: var(--steel); }
+[hidden] { display: none !important; }
+.paybox { margin: 0 0 22px; }
+.paybox .eyebrow, .sendbox .eyebrow { margin-bottom: 4px; color: var(--steel); }
+button.ghost:hover { border-color: var(--steel); }
+button.primary:hover, a.btn.primary:hover { filter: brightness(1.1); }
+@media (prefers-reduced-motion: no-preference) { button, a.btn, .choice-body { transition: filter .15s, border-color .15s; } }
+
+#result { display: none; }
+#result.show { display: block; }
+pre#summary {
+  white-space: pre-wrap; word-break: break-word; font-family: var(--mono); font-size: 13.5px; line-height: 1.6;
+  background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 16px; margin: 12px 0; overflow-x: auto;
+}
+.ok { color: var(--good); font-weight: 600; margin: 0; }
+footer { text-align: center; color: var(--muted); font-family: var(--mono); font-size: 12.5px; letter-spacing: .04em; padding: 0 16px 36px; }
+@media (max-width: 560px) {
+  .grid { grid-template-columns: 1fr; }
+  .choice-body { flex-direction: column; align-items: flex-start; gap: 4px; }
+  section.step { padding: 18px 16px; }
+}
+</style>
+</head>
+<body>
+<canvas id="bg" aria-hidden="true"></canvas>
+<nav class="nav" aria-label="Site">
+  <div class="nav-inner">
+    <svg class="logo" viewBox="0 0 32 32" fill="none" stroke="#9fb3c8" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+      <circle cx="16" cy="6" r="2.4"/>
+      <path d="M15 8 L6 28 M17 8 L26 28 M10.5 20 H21.5"/>
+    </svg>
+    <span class="wordmark">NISHLAB CREATIONS</span>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow">Enrollment · Live online CAD and CAE training · Mumbai · IST</p>
+    <h1>Reserve your seat. <em>Start building the part.</em></h1>
+    <p class="lede">Fill in five short sections, then send your details on WhatsApp. Your seat is confirmed once your <strong>payment is received</strong>.</p>
+  </div>
+</header>
+
+<main>
+<form id="enroll" novalidate>
+
+  <section class="step" aria-labelledby="h1s">
+    <h2 id="h1s"><span class="num">01</span> Student details</h2>
+    <div class="grid">
+      <div class="field full">
+        <label for="name">Full name <span class="opt">(as it should appear on your certificate)</span></label>
+        <input type="text" id="name" name="name" autocomplete="name" required>
+        <p class="err" id="e-name"></p>
+      </div>
+      <div class="field">
+        <label for="phone">WhatsApp number</label>
+        <input type="tel" id="phone" name="phone" autocomplete="tel" placeholder="+91 98XXXXXXXX" required>
+        <p class="err" id="e-phone"></p>
+      </div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" autocomplete="email" required>
+        <p class="err" id="e-email"></p>
+      </div>
+      <div class="field">
+        <label for="city">City and country</label>
+        <input type="text" id="city" name="city" autocomplete="address-level2" placeholder="Mumbai, India" required>
+        <p class="err" id="e-city"></p>
+      </div>
+      <div class="field">
+        <label for="qual">Current status</label>
+        <select id="qual" name="qual" required>
+          <option value="">Select</option>
+          <option>Diploma student</option>
+          <option>B.E. / B.Tech student</option>
+          <option>Diploma / B.E. / B.Tech graduate</option>
+          <option>ITI or other trade qualification</option>
+          <option>Working professional</option>
+          <option>Other</option>
+        </select>
+        <p class="err" id="e-qual"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="step" aria-labelledby="h2s">
+    <h2 id="h2s"><span class="num">02</span> Choose your course</h2>
+    <fieldset class="choices" id="courses" aria-describedby="e-course">
+      <legend class="legend" style="padding:0;margin-bottom:10px">Course</legend>
+      <label class="choice"><input type="radio" name="course" value="sw"><span class="choice-body"><span><span class="choice-title">SolidWorks Master Course</span><span class="choice-sub">Part modelling, assemblies, drawings, sheet metal, surfacing</span></span><span class="price">₹6,000</span></span></label>
+      <label class="choice"><input type="radio" name="course" value="ac"><span class="choice-body"><span><span class="choice-title">AutoCAD Master Course</span><span class="choice-sub">2D drafting, annotation, layouts, plotting</span></span><span class="price">₹4,000</span></span></label>
+      <label class="choice"><input type="radio" name="course" value="acsw"><span class="choice-body"><span><span class="choice-title">Combined AutoCAD + SolidWorks</span><span class="choice-sub">Both master courses in one enrolment</span></span><span class="price">₹7,080</span></span></label>
+      <label class="choice"><input type="radio" name="course" value="swan"><span class="choice-body"><span><span class="choice-title">Combined SolidWorks + ANSYS</span><span class="choice-sub">Design in SolidWorks, then analyse in ANSYS</span></span><span class="price">₹7,080</span></span></label>
+    </fieldset>
+    <p class="err" id="e-course"></p>
+  </section>
+
+  <section class="step" aria-labelledby="h3s">
+    <h2 id="h3s"><span class="num">03</span> Payment plan</h2>
+    <fieldset class="choices" id="plans" aria-describedby="e-plan">
+      <legend class="legend" style="padding:0;margin-bottom:10px">How will you pay?</legend>
+      <label class="choice"><input type="radio" name="plan" value="full"><span class="choice-body"><span><span class="choice-title">One-time payment</span><span class="choice-sub">Pay the full fee now</span></span><span class="price" id="p-full">–</span></span></label>
+      <label class="choice"><input type="radio" name="plan" value="part" id="plan-part"><span class="choice-body"><span><span class="choice-title">Part payment</span><span class="choice-sub" id="part-sub">Available for the SolidWorks Master Course only</span></span><span class="price" id="p-part">–</span></span></label>
+    </fieldset>
+    <p class="err" id="e-plan"></p>
+
+    <div class="fee" aria-live="polite">
+      <dl>
+        <dt>Course</dt><dd id="f-course">Not selected</dd>
+        <dt>Pay now</dt><dd id="f-now">–</dd>
+        <dt id="f-later-label" hidden>Pay later</dt><dd id="f-later" hidden>–</dd>
+        <div class="total"><dt>Total fee</dt><dd id="f-total">–</dd></div>
+      </dl>
+      <p class="note" id="f-note" hidden></p>
+    </div>
+    <p class="hint" style="margin-top:14px">After you review your enrollment, a Pay button for this exact amount appears. Payment opens on a secure Cashfree page.</p>
+  </section>
+
+  <section class="step" aria-labelledby="h4s">
+    <h2 id="h4s"><span class="num">04</span> Learning setup</h2>
+    <div class="grid">
+      <div class="field">
+        <label for="level">Experience with CAD</label>
+        <select id="level" name="level" required>
+          <option value="">Select</option>
+          <option>Complete beginner</option>
+          <option>Basic (know a few commands)</option>
+          <option>Intermediate (have built projects)</option>
+        </select>
+        <p class="err" id="e-level"></p>
+      </div>
+      <div class="field">
+        <label for="software">Software on your computer</label>
+        <select id="software" name="software" required>
+          <option value="">Select</option>
+          <option>Licensed copy installed</option>
+          <option>Student or trial version installed</option>
+          <option>Not installed yet, need install help</option>
+        </select>
+        <p class="err" id="e-software"></p>
+      </div>
+      <div class="field">
+        <label for="slot">Preferred class time <span class="opt">(IST)</span></label>
+        <select id="slot" name="slot" required>
+          <option value="">Select</option>
+          <option>Morning (6 am – 8 am)</option>
+          <option>Afternoon (2 pm – 4 pm)</option>
+          <option>Evening (5 pm – 7 pm)</option>
+          <option>Night (8 pm – 10 pm)</option>
+        </select>
+        <p class="err" id="e-slot"></p>
+      </div>
+      <div class="field">
+        <label for="source">How did you hear about us? <span class="opt">(optional)</span></label>
+        <select id="source" name="source">
+          <option value="">Select</option>
+          <option>Instagram</option>
+          <option>LinkedIn</option>
+          <option>YouTube</option>
+          <option>UrbanPro</option>
+          <option>Friend or colleague</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="field full">
+        <label for="goal">What do you want to achieve with this course? <span class="opt">(optional)</span></label>
+        <textarea id="goal" name="goal" placeholder="Example: get a design engineer job, finish a college project, move from 2D to 3D"></textarea>
+      </div>
+    </div>
+  </section>
+
+  <section class="step" aria-labelledby="h5s">
+    <h2 id="h5s"><span class="num">05</span> Confirm</h2>
+    <label class="check" for="agree">
+      <input type="checkbox" id="agree" name="agree">
+      <span>I confirm the details above are correct. I understand that my seat is confirmed after the fee for my chosen plan is received, and that the part-payment balance is due 20 days after the first payment.</span>
+    </label>
+    <p class="err" id="e-agree"></p>
+    <div class="actions">
+      <button type="submit" class="primary">Review my enrollment →</button>
+      <button type="reset" class="ghost" id="reset">Clear form</button>
+    </div>
+  </section>
+</form>
+
+<section class="step" id="result" aria-labelledby="hr" tabindex="-1">
+  <h2 id="hr"><span class="num">DONE</span> Your enrollment details</h2>
+  <p class="ok">Details checked. Two steps left to confirm your seat.</p>
+  <div class="paybox">
+    <p class="eyebrow">Step 1 · Pay your fee</p>
+    <div class="actions" style="margin-top:8px">
+      <a class="btn primary" id="pay-now" href="#" target="_blank" rel="noopener">Pay now →</a>
+      <a class="btn ghost" id="pay-bal" href="#" target="_blank" rel="noopener" hidden>Balance</a>
+    </div>
+    <p class="hint" id="pay-note" style="margin-top:10px"></p>
+  </div>
+  <div class="sendbox">
+    <p class="eyebrow">Step 2 · Send your details</p>
+    <pre id="summary"></pre>
+  </div>
+  <div class="actions" style="margin-top:0">
+    <a class="btn ghost" id="wa" href="#" target="_blank" rel="noopener">Send on WhatsApp →</a>
+    <button type="button" class="ghost" id="copy">Copy details</button>
+    <button type="button" class="ghost" id="edit">Edit form</button>
+  </div>
+  <p class="hint" id="copy-msg" role="status" style="margin-top:12px"></p>
+  <p class="hint">Prefer email? Copy the details and send them to nishad@nishlabcreations.com.</p>
+</section>
+</main>
+
+<footer>
+  NISHLAB CREATIONS · MSME REGISTERED (UDYAM) · MUMBAI · NISHLABCREATIONS.ONLINE
+</footer>
+
+<script>
+(function () {
+  var WHATSAPP_NUMBER = "919326427617";
+  var COURSES = {
+    sw:   { name: "SolidWorks Master Course", full: 6000, part: [4000, 2000] },
+    ac:   { name: "AutoCAD Master Course", full: 4000, part: null },
+    acsw: { name: "Combined AutoCAD + SolidWorks", full: 7080, part: null },
+    swan: { name: "Combined SolidWorks + ANSYS", full: 7080, part: null }
+  };
+  var PAY_LINKS = {
+    sw:   { full: "__PAY_SW_FULL__",
+            part1: "__PAY_SW_PART1__",
+            balance: "__PAY_SW_BALANCE__" },
+    ac:   { full: "__PAY_AC_FULL__" },
+    acsw: { full: "__PAY_ACSW_FULL__" },
+    swan: { full: "__PAY_SWAN_FULL__" }
+  };
+  function payInfo() {
+    var L = PAY_LINKS[checked("course")];
+    return checked("plan") === "part" ? { now: L.part1, later: L.balance } : { now: L.full };
+  }
+  var $ = function (id) { return document.getElementById(id); };
+  var form = $("enroll");
+  var inr = function (n) { return "₹" + n.toLocaleString("en-IN"); };
+  var dueDate = function () {
+    var d = new Date(); d.setDate(d.getDate() + 20);
+    return d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+  };
+  var val = function (name) {
+    var el = form.elements[name];
+    return el && el.value ? el.value.trim() : "";
+  };
+  var checked = function (name) {
+    var el = form.querySelector('input[name="' + name + '"]:checked');
+    return el ? el.value : "";
+  };
+
+  function updateFee() {
+    var c = COURSES[checked("course")];
+    var partInput = $("plan-part");
+    if (!c) {
+      $("f-course").textContent = "Not selected";
+      $("f-now").textContent = "–"; $("f-total").textContent = "–";
+      $("f-later").hidden = true; $("f-later-label").hidden = true; $("f-note").hidden = true;
+      return;
+    }
+    $("p-full").textContent = inr(c.full);
+    if (c.part) {
+      partInput.disabled = false;
+      $("p-part").textContent = inr(c.part[0]) + " + " + inr(c.part[1]);
+      $("part-sub").textContent = inr(c.part[0]) + " now, " + inr(c.part[1]) + " after 20 days";
+    } else {
+      partInput.disabled = true;
+      if (partInput.checked) partInput.checked = false;
+      $("p-part").textContent = "–";
+      $("part-sub").textContent = "Not available for this course. Pay in full.";
+    }
+    var plan = checked("plan");
+    $("f-course").textContent = c.name;
+    $("f-total").textContent = inr(c.full);
+    var later = $("f-later"), laterLabel = $("f-later-label"), note = $("f-note");
+    if (plan === "part" && c.part) {
+      $("f-now").textContent = inr(c.part[0]);
+      later.textContent = inr(c.part[1]); later.hidden = false; laterLabel.hidden = false;
+      note.textContent = "Balance of " + inr(c.part[1]) + " is due 20 days after your first payment (by " + dueDate() + " if you pay today).";
+      note.hidden = false;
+    } else if (plan === "full") {
+      $("f-now").textContent = inr(c.full);
+      later.hidden = true; laterLabel.hidden = true; note.hidden = true;
+    } else {
+      $("f-now").textContent = "Choose a plan";
+      later.hidden = true; laterLabel.hidden = true; note.hidden = true;
+    }
+  }
+  form.addEventListener("change", updateFee);
+  form.addEventListener("reset", function () { setTimeout(function () { updateFee(); clearErrors(); }, 0); });
+
+  function clearErrors() {
+    Array.prototype.forEach.call(document.querySelectorAll(".err"), function (e) { e.textContent = ""; });
+    Array.prototype.forEach.call(document.querySelectorAll(".invalid"), function (e) { e.classList.remove("invalid"); });
+  }
+  function fail(id, msg, fieldId) {
+    $("e-" + id).textContent = msg;
+    var f = $(fieldId || id); if (f) f.classList.add("invalid");
+    return fieldId || id;
+  }
+
+  function validate() {
+    clearErrors();
+    var first = null;
+    function mark(r) { if (!first && r) first = r; }
+    if (val("name").length < 3) mark(fail("name", "Enter your full name."));
+    var digits = val("phone").replace(/\D/g, "");
+    if (digits.length < 10 || digits.length > 15) mark(fail("phone", "Enter a WhatsApp number with 10 to 15 digits."));
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(val("email"))) mark(fail("email", "Enter a valid email, like name@example.com."));
+    if (val("city").length < 2) mark(fail("city", "Enter your city and country."));
+    if (!val("qual")) mark(fail("qual", "Select your current status."));
+    if (!checked("course")) mark(fail("course", "Select a course.", "courses"));
+    if (!checked("plan")) mark(fail("plan", "Select a payment plan.", "plans"));
+    if (!val("level")) mark(fail("level", "Select your experience level."));
+    if (!val("software")) mark(fail("software", "Select your software status."));
+    if (!val("slot")) mark(fail("slot", "Select a class time."));
+    if (!$("agree").checked) mark(fail("agree", "Tick the box to confirm.", "agree"));
+    return first;
+  }
+
+  function buildSummary() {
+    var c = COURSES[checked("course")];
+    var plan = checked("plan");
+    var pay = plan === "part"
+      ? "Part payment: " + inr(c.part[0]) + " now + " + inr(c.part[1]) + " within 20 days (total " + inr(c.full) + ")"
+      : "One-time payment: " + inr(c.full);
+    var lines = [
+      "NISHLAB CREATIONS – ENROLLMENT",
+      "",
+      "Name: " + val("name"),
+      "WhatsApp: " + val("phone"),
+      "Email: " + val("email"),
+      "Location: " + val("city"),
+      "Status: " + val("qual"),
+      "",
+      "Course: " + c.name,
+      "Payment: " + pay,
+      "",
+      "CAD experience: " + val("level"),
+      "Software: " + val("software"),
+      "Preferred time (IST): " + val("slot")
+    ];
+    if (val("source")) lines.push("Heard about us via: " + val("source"));
+    if (val("goal")) lines.push("Goal: " + val("goal"));
+    lines.push("", "Payment link: " + payInfo().now);
+    lines.push("", "Submitted: " + new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }));
+    return lines.join("\n");
+  }
+
+  form.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var firstBad = validate();
+    if (firstBad) {
+      var el = $(firstBad);
+      if (el) { el.scrollIntoView({ block: "center" }); if (el.focus && el.tagName !== "FIELDSET") el.focus(); }
+      return;
+    }
+    var text = buildSummary();
+    $("summary").textContent = text;
+    var pc = COURSES[checked("course")], pinfo = payInfo(), isPart = checked("plan") === "part";
+    $("pay-now").href = pinfo.now;
+    $("pay-now").textContent = "Pay " + inr(isPart ? pc.part[0] : pc.full) + " now →";
+    if (isPart) {
+      $("pay-bal").href = pinfo.later;
+      $("pay-bal").textContent = "Balance " + inr(pc.part[1]) + " (pay by " + dueDate() + ")";
+      $("pay-bal").hidden = false;
+      $("pay-note").textContent = "Pay the first instalment now. Use the balance button within 20 days of your first payment.";
+    } else {
+      $("pay-bal").hidden = true;
+      $("pay-note").textContent = "The payment page opens in a new tab. After paying, come back and send your details below.";
+    }
+    $("wa").href = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(text);
+    $("copy-msg").textContent = "";
+    $("result").classList.add("show");
+    $("result").scrollIntoView({ block: "start" });
+    $("result").focus();
+  });
+
+  $("edit").addEventListener("click", function () {
+    $("result").classList.remove("show");
+    form.scrollIntoView({ block: "start" });
+  });
+
+  $("copy").addEventListener("click", function () {
+    var text = $("summary").textContent;
+    var done = function () { $("copy-msg").textContent = "Copied. Paste it into WhatsApp or email."; };
+    var fallback = function () {
+      var range = document.createRange(); range.selectNodeContents($("summary"));
+      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+      $("copy-msg").textContent = "Text selected. Press Ctrl+C (or long-press) to copy.";
+    };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else { fallback(); }
+    } catch (e) { fallback(); }
+  });
+
+  updateFee();
+})();
+</script>
+<script>
+/* Live CAD viewport background: blueprint grid, two meshing wireframe gears, dimension callout. Turns with time and with scroll. */
+(function () {
+  var cv = document.getElementById("bg");
+  if (!cv || !cv.getContext) return;
+  var ctx = cv.getContext("2d");
+  var W = 0, H = 0, dpr = 1;
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var STEEL = "159,179,200", HOT = "255,106,26";
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function grid(scroll) {
+    var minor = 40, major = 200, off = -(scroll * 0.25) % major;
+    ctx.lineWidth = 1;
+    for (var x = 0; x <= W; x += minor) {
+      ctx.strokeStyle = (x % major === 0) ? "rgba(" + STEEL + ",0.10)" : "rgba(" + STEEL + ",0.045)";
+      ctx.beginPath(); ctx.moveTo(x + .5, 0); ctx.lineTo(x + .5, H); ctx.stroke();
+    }
+    for (var y = off; y <= H; y += minor) {
+      var isMajor = Math.round((y - off) / minor) % (major / minor) === 0;
+      ctx.strokeStyle = isMajor ? "rgba(" + STEEL + ",0.10)" : "rgba(" + STEEL + ",0.045)";
+      ctx.beginPath(); ctx.moveTo(0, y + .5); ctx.lineTo(W, y + .5); ctx.stroke();
+    }
+  }
+
+  function gear(cx, cy, rRoot, rTip, teeth, rot, rgb, alpha) {
+    var step = Math.PI * 2 / teeth, i, a;
+    ctx.beginPath();
+    for (i = 0; i < teeth; i++) {
+      a = i * step + rot;
+      ctx.lineTo(cx + Math.cos(a) * rRoot, cy + Math.sin(a) * rRoot);
+      ctx.lineTo(cx + Math.cos(a + step * .18) * rTip, cy + Math.sin(a + step * .18) * rTip);
+      ctx.lineTo(cx + Math.cos(a + step * .42) * rTip, cy + Math.sin(a + step * .42) * rTip);
+      ctx.lineTo(cx + Math.cos(a + step * .6) * rRoot, cy + Math.sin(a + step * .6) * rRoot);
+    }
+    ctx.closePath();
+    ctx.fillStyle = "rgba(" + rgb + "," + (alpha * 0.10) + ")";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(" + rgb + "," + alpha + ")";
+    ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(cx, cy, rRoot * .72, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx, cy, rRoot * .22, 0, Math.PI * 2); ctx.stroke();
+    for (i = 0; i < 6; i++) {
+      a = rot + i * Math.PI / 3;
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(a) * rRoot * .22, cy + Math.sin(a) * rRoot * .22);
+      ctx.lineTo(cx + Math.cos(a) * rRoot * .72, cy + Math.sin(a) * rRoot * .72);
+      ctx.stroke();
+    }
+    ctx.strokeStyle = "rgba(" + rgb + "," + (alpha * .5) + ")";
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath(); ctx.arc(cx, cy, (rRoot + rTip) / 2, 0, Math.PI * 2); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  function dimension(cx, cy, r, label) {
+    var y = cy + r + 26, x1 = cx - r, x2 = cx + r;
+    ctx.strokeStyle = "rgba(" + STEEL + ",0.32)"; ctx.fillStyle = "rgba(" + STEEL + ",0.5)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x1, cy + r + 6); ctx.lineTo(x1, y + 8);
+    ctx.moveTo(x2, cy + r + 6); ctx.lineTo(x2, y + 8);
+    ctx.moveTo(x1, y); ctx.lineTo(x2, y);
+    ctx.stroke();
+    [[x1, 1], [x2, -1]].forEach(function (p) {
+      ctx.beginPath(); ctx.moveTo(p[0], y); ctx.lineTo(p[0] + 9 * p[1], y - 3.5); ctx.lineTo(p[0] + 9 * p[1], y + 3.5); ctx.closePath(); ctx.fill();
+    });
+    ctx.font = "12px 'JetBrains Mono', ui-monospace, monospace";
+    ctx.textAlign = "center";
+    ctx.fillText(label, cx, y - 8);
+  }
+
+  function draw(t) {
+    var scroll = window.pageYOffset || 0;
+    ctx.clearRect(0, 0, W, H);
+    grid(scroll);
+
+    var s = Math.max(.55, Math.min(1.25, Math.min(W, H) / 640));
+    var tB = 26, tA = 13, step = 1.0;
+    var rTipB = 150 * s, rRootB = 132 * s;
+    var rTipA = rTipB * tA / tB, rRootA = rRootB * tA / tB;
+    var pitchB = (rTipB + rRootB) / 2, pitchA = (rTipA + rRootA) / 2;
+    var d = pitchA + pitchB;
+
+    var spin = t * 0.00022 + scroll * 0.0016;
+    var bx = W * 0.90, by = H * 0.34 + Math.min(scroll * 0.08, 60);
+    var ang = Math.PI * 0.86;
+    var ax = bx + Math.cos(ang) * d, ay = by + Math.sin(ang) * d;
+    var rotB = spin;
+    var rotA = -spin * tB / tA + Math.PI / tA;
+
+    gear(bx, by, rRootB, rTipB, tB, rotB, STEEL, 0.30);
+    gear(ax, ay, rRootA, rTipA, tA, rotA, HOT, 0.38);
+    dimension(bx, by, rTipB, "Ø " + (rTipB * 2 / s / 1.5).toFixed(2));
+
+    var cx = W * 0.06, cy = H * 0.88;
+    gear(cx, cy, 60 * s, 70 * s, 16, -spin * 1.4, STEEL, 0.16);
+
+    ctx.fillStyle = "rgba(" + STEEL + ",0.38)";
+    ctx.font = "11px 'JetBrains Mono', ui-monospace, monospace";
+    ctx.textAlign = "left";
+    ctx.fillText("VIEWPORT · ISOMETRIC", 16, H - 16);
+    ctx.textAlign = "right";
+    ctx.fillText("RATIO 1 : 2.00", W - 16, H - 16);
+  }
+
+  var raf = 0;
+  function loop(t) { draw(t); raf = requestAnimationFrame(loop); }
+  function start() {
+    if (reduce) { draw(0); return; }
+    if (!raf) raf = requestAnimationFrame(loop);
+  }
+  function stop() { if (raf) { cancelAnimationFrame(raf); raf = 0; } }
+
+  window.addEventListener("resize", function () { resize(); if (reduce) draw(0); });
+  document.addEventListener("visibilitychange", function () { document.hidden ? stop() : start(); });
+  if (reduce) window.addEventListener("scroll", function () { draw(0); }, { passive: true });
+  resize(); start();
+})();
+</script>
+</body>
+</html>
