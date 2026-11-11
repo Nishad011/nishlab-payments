@@ -19,34 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Inject payment links from repository secrets
-        env:
-          PAY_SW_FULL: ${{ secrets.PAY_SW_FULL }}
-          PAY_SW_PART1: ${{ secrets.PAY_SW_PART1 }}
-          PAY_SW_BALANCE: ${{ secrets.PAY_SW_BALANCE }}
-          PAY_AC_FULL: ${{ secrets.PAY_AC_FULL }}
-          PAY_ACSW_FULL: ${{ secrets.PAY_ACSW_FULL }}
-          PAY_SWAN_FULL: ${{ secrets.PAY_SWAN_FULL }}
+      - name: Collect site files
         run: |
           mkdir dist
-          cp index.html CNAME dist/
-          python3 - <<'PY'
-          import os, sys
-          path = "dist/index.html"
-          html = open(path, encoding="utf-8").read()
-          keys = ["PAY_SW_FULL", "PAY_SW_PART1", "PAY_SW_BALANCE",
-                  "PAY_AC_FULL", "PAY_ACSW_FULL", "PAY_SWAN_FULL"]
-          for k in keys:
-              v = os.environ.get(k, "").strip()
-              if not v.startswith("https://payments.cashfree.com/"):
-                  sys.exit("Secret " + k + " is missing or is not a Cashfree link")
-              html = html.replace("__" + k + "__", v)
-          if "__PAY_" in html:
-              sys.exit("A payment placeholder was left in index.html")
-          open(path, "w", encoding="utf-8").write(html)
-          PY
-
+          cp index.html CNAME qr.png qr-7080.png dist/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
