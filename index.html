@@ -184,6 +184,16 @@ footer { text-align: center; color: var(--muted); font-family: var(--mono); font
   .choice-body { flex-direction: column; align-items: flex-start; gap: 4px; }
   section.step { padding: 18px 16px; }
 }
+input[type=file] { padding: 9px 12px; }
+input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin-right: 12px; border: 1px solid var(--line); background: var(--panel-2); color: var(--text); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.payqr { display: grid; grid-template-columns: 260px 1fr; gap: 22px; align-items: center; }
+.qrframe { background: #fff; border-radius: 12px; padding: 8px; width: 260px; min-height: 240px; display: flex; align-items: center; justify-content: center; }
+.qrframe img { width: 100%; height: auto; display: block; }
+.qr-missing { color: #33414f; font-size: 14px; text-align: center; margin: 0; }
+.due { font-family: var(--display); font-weight: 800; font-size: 44px; letter-spacing: -.03em; color: var(--hot); margin: 2px 0 8px; font-variant-numeric: tabular-nums; line-height: 1.05; }
+.due.pending { font-size: 20px; letter-spacing: 0; color: var(--muted); font-weight: 700; }
+#shot-preview { max-width: 220px; max-height: 220px; border: 1px solid var(--line); border-radius: 10px; margin-top: 6px; }
+@media (max-width: 560px) { .payqr { grid-template-columns: 1fr; justify-items: center; text-align: center; } }
 </style>
 </head>
 <body>
@@ -202,7 +212,7 @@ footer { text-align: center; color: var(--muted); font-family: var(--mono); font
   <div class="hero-inner">
     <p class="eyebrow">Enrollment · Live online CAD and CAE training · Mumbai · IST</p>
     <h1>Reserve your seat. <em>Start building the part.</em></h1>
-    <p class="lede">Fill in five short sections, then send your details on WhatsApp. Your seat is confirmed once your <strong>payment is received</strong>.</p>
+    <p class="lede">Fill in the form, pay by QR, upload your payment screenshot and submit. Your seat is confirmed once your <strong>payment is verified</strong>.</p>
   </div>
 </header>
 
@@ -278,7 +288,7 @@ footer { text-align: center; color: var(--muted); font-family: var(--mono); font
       </dl>
       <p class="note" id="f-note" hidden></p>
     </div>
-    <p class="hint" style="margin-top:14px">After you review your enrollment, a Pay button for this exact amount appears. Payment opens on a secure Cashfree page.</p>
+    <p class="hint" style="margin-top:14px">You pay the "Pay now" amount by QR in section 05, then upload your payment screenshot.</p>
   </section>
 
   <section class="step" aria-labelledby="h4s">
@@ -335,41 +345,64 @@ footer { text-align: center; color: var(--muted); font-family: var(--mono); font
   </section>
 
   <section class="step" aria-labelledby="h5s">
-    <h2 id="h5s"><span class="num">05</span> Confirm</h2>
-    <label class="check" for="agree">
+    <h2 id="h5s"><span class="num">05</span> Pay by QR and upload proof</h2>
+    <div class="payqr">
+      <div class="qrframe">
+        <img id="qr" src="qr.png" alt="NISHLAB CREATIONS payment QR code">
+        <p class="qr-missing" id="qr-missing" hidden>The payment QR code will appear here.</p>
+      </div>
+      <div>
+        <p class="eyebrow" style="margin:0">Amount to pay now</p>
+        <p class="due pending" id="due">Choose a course and plan</p>
+        <p class="hint">Scan the QR with any UPI app and pay the exact amount shown. Then upload the screenshot below.</p>
+        <p class="hint" id="upi-line" hidden>UPI ID: <strong id="upi-id"></strong></p>
+      </div>
+    </div>
+    <div class="grid" style="margin-top:20px">
+      <div class="field full">
+        <label for="shot">Payment screenshot</label>
+        <input type="file" id="shot" name="shot" accept="image/*">
+        <p class="hint">PNG or JPG. The amount, date and transaction ID should be visible.</p>
+        <img id="shot-preview" alt="Preview of your payment screenshot" hidden>
+        <p class="err" id="e-shot"></p>
+      </div>
+      <div class="field full">
+        <label for="utr">UPI transaction ID <span class="opt">(optional)</span></label>
+        <input type="text" id="utr" name="utr" inputmode="numeric" autocomplete="off">
+      </div>
+      <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+    </div>
+    <label class="check" for="agree" style="margin-top:18px">
       <input type="checkbox" id="agree" name="agree">
-      <span>I confirm the details above are correct. I understand that my seat is confirmed after the fee for my chosen plan is received, and that the part-payment balance is due 20 days after the first payment.</span>
+      <span>I confirm the details above are correct and that I have paid the amount shown. I understand my seat is confirmed after NISHLAB CREATIONS verifies my payment, and that the part-payment balance is due 20 days after the first payment.</span>
     </label>
     <p class="err" id="e-agree"></p>
     <div class="actions">
-      <button type="submit" class="primary">Review my enrollment →</button>
-      <button type="reset" class="ghost" id="reset">Clear form</button>
+      <button type="submit" class="primary" id="submit">Submit enrollment →</button>
+      <button type="reset" class="ghost">Clear form</button>
     </div>
+    <p class="err" id="e-submit" role="alert" style="margin-top:10px"></p>
   </section>
 </form>
 
-<section class="step" id="result" aria-labelledby="hr" tabindex="-1">
-  <h2 id="hr"><span class="num">DONE</span> Your enrollment details</h2>
-  <p class="ok">Details checked. Two steps left to confirm your seat.</p>
-  <div class="paybox">
-    <p class="eyebrow">Step 1 · Pay your fee</p>
-    <div class="actions" style="margin-top:8px">
-      <a class="btn primary" id="pay-now" href="#" target="_blank" rel="noopener">Pay now →</a>
-      <a class="btn ghost" id="pay-bal" href="#" target="_blank" rel="noopener" hidden>Balance</a>
-    </div>
-    <p class="hint" id="pay-note" style="margin-top:10px"></p>
-  </div>
-  <div class="sendbox">
-    <p class="eyebrow">Step 2 · Send your details</p>
-    <pre id="summary"></pre>
-  </div>
+<section class="step" id="done" aria-labelledby="hd" tabindex="-1" hidden>
+  <h2 id="hd"><span class="num">DONE</span> Thanks for joining us</h2>
+  <p class="ok" id="done-line"></p>
+  <p>A confirmation email is on its way to <strong id="done-email"></strong>. Other details and your invoice will be shared shortly.</p>
+  <p class="hint">Reference: <span id="done-ref" style="font-family:var(--mono)"></span>. Quote it if you contact us. If the email does not arrive within a few minutes, check your spam folder.</p>
+</section>
+
+<section class="step" id="fallback" aria-labelledby="hf" tabindex="-1" hidden>
+  <h2 id="hf"><span class="num">SEND</span> Send your details on WhatsApp</h2>
+  <p id="fb-reason" style="margin-top:0"></p>
+  <pre id="summary"></pre>
   <div class="actions" style="margin-top:0">
-    <a class="btn ghost" id="wa" href="#" target="_blank" rel="noopener">Send on WhatsApp →</a>
+    <a class="btn primary" id="wa" href="#" target="_blank" rel="noopener">Send on WhatsApp →</a>
     <button type="button" class="ghost" id="copy">Copy details</button>
-    <button type="button" class="ghost" id="edit">Edit form</button>
+    <button type="button" class="ghost" id="edit">Back to form</button>
   </div>
-  <p class="hint" id="copy-msg" role="status" style="margin-top:12px"></p>
-  <p class="hint">Prefer email? Copy the details and send them to nishad@nishlabcreations.com.</p>
+  <p class="hint" style="margin-top:12px">Attach your payment screenshot in the WhatsApp chat.</p>
+  <p class="hint" id="copy-msg" role="status"></p>
 </section>
 </main>
 
@@ -379,25 +412,17 @@ footer { text-align: center; color: var(--muted); font-family: var(--mono); font
 
 <script>
 (function () {
+  /* Paste the Google Apps Script web app URL here (see apps-script/SETUP.md). Leave empty to use the WhatsApp fallback only. */
+  var SUBMIT_URL = "https://script.google.com/macros/s/AKfycbyGR8-uv4914jF9SrCRbkla9EbK8V1p3fthTAcadJforzGCrUb72Uv0IWilyMxlxl-tjw/exec";
   var WHATSAPP_NUMBER = "919326427617";
+  var UPI_ID = "nishadevdesign@oksbi";
+
   var COURSES = {
     sw:   { name: "SolidWorks Master Course", full: 6000, part: [4000, 2000] },
     ac:   { name: "AutoCAD Master Course", full: 4000, part: null },
     acsw: { name: "Combined AutoCAD + SolidWorks", full: 7080, part: null },
     swan: { name: "Combined SolidWorks + ANSYS", full: 7080, part: null }
   };
-  var PAY_LINKS = {
-    sw:   { full: "__PAY_SW_FULL__",
-            part1: "__PAY_SW_PART1__",
-            balance: "__PAY_SW_BALANCE__" },
-    ac:   { full: "__PAY_AC_FULL__" },
-    acsw: { full: "__PAY_ACSW_FULL__" },
-    swan: { full: "__PAY_SWAN_FULL__" }
-  };
-  function payInfo() {
-    var L = PAY_LINKS[checked("course")];
-    return checked("plan") === "part" ? { now: L.part1, later: L.balance } : { now: L.full };
-  }
   var $ = function (id) { return document.getElementById(id); };
   var form = $("enroll");
   var inr = function (n) { return "₹" + n.toLocaleString("en-IN"); };
@@ -413,14 +438,33 @@ footer { text-align: center; color: var(--muted); font-family: var(--mono); font
     var el = form.querySelector('input[name="' + name + '"]:checked');
     return el ? el.value : "";
   };
+  var newId = function () {
+    try { if (window.crypto && crypto.randomUUID) return crypto.randomUUID(); } catch (e) {}
+    return "id-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+  };
+  var clientId = newId();
+  var previewUrl = "";
 
+  /* ---- QR image fallback ---- */
+  var qr = $("qr");
+  function qrMissing() { qr.hidden = true; $("qr-missing").hidden = false; }
+  qr.addEventListener("error", qrMissing);
+  qr.addEventListener("load", function () { qr.hidden = false; $("qr-missing").hidden = true; });
+  function setQr(src) { if (qr.getAttribute("src") !== src) qr.setAttribute("src", src); }
+  if (qr.complete && qr.naturalWidth === 0) qrMissing();
+  if (UPI_ID) { $("upi-id").textContent = UPI_ID; $("upi-line").hidden = false; }
+
+  /* ---- fee box ---- */
   function updateFee() {
     var c = COURSES[checked("course")];
     var partInput = $("plan-part");
+    var due = $("due");
     if (!c) {
       $("f-course").textContent = "Not selected";
       $("f-now").textContent = "–"; $("f-total").textContent = "–";
       $("f-later").hidden = true; $("f-later-label").hidden = true; $("f-note").hidden = true;
+      due.textContent = "Choose a course and plan"; due.className = "due pending";
+      setQr("qr.png");
       return;
     }
     $("p-full").textContent = inr(c.full);
@@ -443,17 +487,55 @@ footer { text-align: center; color: var(--muted); font-family: var(--mono); font
       later.textContent = inr(c.part[1]); later.hidden = false; laterLabel.hidden = false;
       note.textContent = "Balance of " + inr(c.part[1]) + " is due 20 days after your first payment (by " + dueDate() + " if you pay today).";
       note.hidden = false;
+      due.textContent = inr(c.part[0]); due.className = "due";
     } else if (plan === "full") {
       $("f-now").textContent = inr(c.full);
       later.hidden = true; laterLabel.hidden = true; note.hidden = true;
+      due.textContent = inr(c.full); due.className = "due";
     } else {
       $("f-now").textContent = "Choose a plan";
       later.hidden = true; laterLabel.hidden = true; note.hidden = true;
+      due.textContent = "Choose a plan"; due.className = "due pending";
     }
+    /* The second QR has the Rs 7,080 amount filled in, so it is only used for the combined courses paid in full. */
+    var combined = (checked("course") === "acsw" || checked("course") === "swan") && plan === "full";
+    setQr(combined ? "qr-7080.png" : "qr.png");
   }
   form.addEventListener("change", updateFee);
-  form.addEventListener("reset", function () { setTimeout(function () { updateFee(); clearErrors(); }, 0); });
 
+  /* ---- screenshot picker ---- */
+  var MAX_FILE = 15 * 1024 * 1024;
+  $("shot").addEventListener("change", function () {
+    var f = this.files && this.files[0];
+    $("e-shot").textContent = ""; this.classList.remove("invalid");
+    if (previewUrl) { URL.revokeObjectURL(previewUrl); previewUrl = ""; }
+    $("shot-preview").hidden = true;
+    if (!f) return;
+    if (!/^image\//.test(f.type)) { this.value = ""; $("e-shot").textContent = "Choose an image file (PNG or JPG)."; return; }
+    if (f.size > MAX_FILE) { this.value = ""; $("e-shot").textContent = "That image is over 15 MB. Choose a smaller screenshot."; return; }
+    previewUrl = URL.createObjectURL(f);
+    $("shot-preview").src = previewUrl; $("shot-preview").hidden = false;
+  });
+
+  function compress(file) {
+    return new Promise(function (resolve, reject) {
+      var url = URL.createObjectURL(file), img = new Image();
+      img.onload = function () {
+        var max = 1400, r = Math.min(1, max / Math.max(img.width, img.height));
+        var c = document.createElement("canvas");
+        c.width = Math.max(1, Math.round(img.width * r)); c.height = Math.max(1, Math.round(img.height * r));
+        var g = c.getContext("2d");
+        g.fillStyle = "#ffffff"; g.fillRect(0, 0, c.width, c.height);
+        g.drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        resolve(c.toDataURL("image/jpeg", 0.82).split(",")[1]);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error("image")); };
+      img.src = url;
+    });
+  }
+
+  /* ---- validation ---- */
   function clearErrors() {
     Array.prototype.forEach.call(document.querySelectorAll(".err"), function (e) { e.textContent = ""; });
     Array.prototype.forEach.call(document.querySelectorAll(".invalid"), function (e) { e.classList.remove("invalid"); });
@@ -463,7 +545,6 @@ footer { text-align: center; color: var(--muted); font-family: var(--mono); font
     var f = $(fieldId || id); if (f) f.classList.add("invalid");
     return fieldId || id;
   }
-
   function validate() {
     clearErrors();
     var first = null;
@@ -479,73 +560,104 @@ footer { text-align: center; color: var(--muted); font-family: var(--mono); font
     if (!val("level")) mark(fail("level", "Select your experience level."));
     if (!val("software")) mark(fail("software", "Select your software status."));
     if (!val("slot")) mark(fail("slot", "Select a class time."));
+    if (!($("shot").files && $("shot").files[0])) mark(fail("shot", "Upload your payment screenshot.", "shot"));
     if (!$("agree").checked) mark(fail("agree", "Tick the box to confirm.", "agree"));
     return first;
   }
 
+  /* ---- summary for the WhatsApp fallback ---- */
   function buildSummary() {
-    var c = COURSES[checked("course")];
-    var plan = checked("plan");
+    var c = COURSES[checked("course")], plan = checked("plan");
     var pay = plan === "part"
       ? "Part payment: " + inr(c.part[0]) + " now + " + inr(c.part[1]) + " within 20 days (total " + inr(c.full) + ")"
       : "One-time payment: " + inr(c.full);
     var lines = [
-      "NISHLAB CREATIONS – ENROLLMENT",
-      "",
-      "Name: " + val("name"),
-      "WhatsApp: " + val("phone"),
-      "Email: " + val("email"),
-      "Location: " + val("city"),
-      "Status: " + val("qual"),
-      "",
-      "Course: " + c.name,
-      "Payment: " + pay,
-      "",
-      "CAD experience: " + val("level"),
-      "Software: " + val("software"),
-      "Preferred time (IST): " + val("slot")
+      "NISHLAB CREATIONS – ENROLLMENT", "",
+      "Name: " + val("name"), "WhatsApp: " + val("phone"), "Email: " + val("email"),
+      "Location: " + val("city"), "Status: " + val("qual"), "",
+      "Course: " + c.name, "Payment: " + pay
     ];
+    if (val("utr")) lines.push("UPI transaction ID: " + val("utr"));
+    lines.push("", "CAD experience: " + val("level"), "Software: " + val("software"), "Preferred time (IST): " + val("slot"));
     if (val("source")) lines.push("Heard about us via: " + val("source"));
     if (val("goal")) lines.push("Goal: " + val("goal"));
-    lines.push("", "Payment link: " + payInfo().now);
     lines.push("", "Submitted: " + new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }));
     return lines.join("\n");
   }
 
+  /* ---- result panels ---- */
+  function focusPanel(el) { el.scrollIntoView({ block: "start" }); el.focus(); }
+  function showDone(ref) {
+    form.hidden = true; $("fallback").hidden = true;
+    var first = val("name").split(/\s+/)[0];
+    $("done-line").textContent = "Thank you, " + first + ". We have received your enrollment and payment screenshot.";
+    $("done-email").textContent = val("email");
+    $("done-ref").textContent = ref || "pending";
+    $("done").hidden = false; focusPanel($("done"));
+  }
+  function showFallback(reason) {
+    var text = buildSummary();
+    $("fb-reason").textContent = reason;
+    $("summary").textContent = text;
+    $("wa").href = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(text);
+    $("copy-msg").textContent = "";
+    form.hidden = true; $("done").hidden = true; $("fallback").hidden = false;
+    focusPanel($("fallback"));
+  }
+  function setBusy(b) {
+    var btn = $("submit");
+    btn.disabled = b; btn.textContent = b ? "Submitting…" : "Submit enrollment →";
+  }
+
+  /* ---- submit ---- */
   form.addEventListener("submit", function (ev) {
     ev.preventDefault();
+    if (val("website")) return; /* honeypot */
+    $("e-submit").textContent = "";
     var firstBad = validate();
     if (firstBad) {
       var el = $(firstBad);
       if (el) { el.scrollIntoView({ block: "center" }); if (el.focus && el.tagName !== "FIELDSET") el.focus(); }
       return;
     }
-    var text = buildSummary();
-    $("summary").textContent = text;
-    var pc = COURSES[checked("course")], pinfo = payInfo(), isPart = checked("plan") === "part";
-    $("pay-now").href = pinfo.now;
-    $("pay-now").textContent = "Pay " + inr(isPart ? pc.part[0] : pc.full) + " now →";
-    if (isPart) {
-      $("pay-bal").href = pinfo.later;
-      $("pay-bal").textContent = "Balance " + inr(pc.part[1]) + " (pay by " + dueDate() + ")";
-      $("pay-bal").hidden = false;
-      $("pay-note").textContent = "Pay the first instalment now. Use the balance button within 20 days of your first payment.";
-    } else {
-      $("pay-bal").hidden = true;
-      $("pay-note").textContent = "The payment page opens in a new tab. After paying, come back and send your details below.";
+    if (!SUBMIT_URL) {
+      showFallback("Online submission is not switched on yet. Send your details on WhatsApp and attach your payment screenshot there.");
+      return;
     }
-    $("wa").href = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(text);
-    $("copy-msg").textContent = "";
-    $("result").classList.add("show");
-    $("result").scrollIntoView({ block: "start" });
-    $("result").focus();
+    setBusy(true);
+    var c = COURSES[checked("course")], plan = checked("plan");
+    compress($("shot").files[0]).then(function (b64) {
+      var payload = {
+        clientId: clientId, name: val("name"), phone: val("phone"), email: val("email"), city: val("city"),
+        qual: val("qual"), course: checked("course"), plan: plan,
+        level: val("level"), software: val("software"), slot: val("slot"),
+        source: val("source"), goal: val("goal"), utr: val("utr"), shot: b64
+      };
+      var ctl = ("AbortController" in window) ? new AbortController() : null;
+      var timer = setTimeout(function () { if (ctl) ctl.abort(); }, 60000);
+      return fetch(SUBMIT_URL, {
+        method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload), signal: ctl ? ctl.signal : undefined
+      }).then(function (r) { clearTimeout(timer); return r.json(); });
+    }).then(function (res) {
+      setBusy(false);
+      if (res && res.ok) { showDone(res.ref); }
+      else { $("e-submit").textContent = (res && res.error) ? res.error : "Something went wrong. Try again, or send your details on WhatsApp."; }
+    }).catch(function () {
+      setBusy(false);
+      showFallback("We could not confirm that your submission went through. Send your details on WhatsApp and attach your payment screenshot so we do not miss you.");
+    });
   });
 
+  form.addEventListener("reset", function () {
+    clientId = newId();
+    if (previewUrl) { URL.revokeObjectURL(previewUrl); previewUrl = ""; }
+    $("shot-preview").hidden = true;
+    setTimeout(function () { updateFee(); clearErrors(); }, 0);
+  });
   $("edit").addEventListener("click", function () {
-    $("result").classList.remove("show");
-    form.scrollIntoView({ block: "start" });
+    $("fallback").hidden = true; form.hidden = false; form.scrollIntoView({ block: "start" });
   });
-
   $("copy").addEventListener("click", function () {
     var text = $("summary").textContent;
     var done = function () { $("copy-msg").textContent = "Copied. Paste it into WhatsApp or email."; };
@@ -555,9 +667,8 @@ footer { text-align: center; color: var(--muted); font-family: var(--mono); font
       $("copy-msg").textContent = "Text selected. Press Ctrl+C (or long-press) to copy.";
     };
     try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(done, fallback);
-      } else { fallback(); }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
+      else fallback();
     } catch (e) { fallback(); }
   });
 
