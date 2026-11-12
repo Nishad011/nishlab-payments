@@ -22,7 +22,7 @@ jobs:
       - name: Collect site files
         run: |
           mkdir dist
-          cp index.html CNAME qr.png qr-7080.png dist/
+          cp index.html CNAME qr.png qr-7080.png qr-6000.png logo.jpg signature.jpg dist/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
