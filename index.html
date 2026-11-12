@@ -285,8 +285,11 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
         <div class="field"><label for="combo1">First course</label><select id="combo1" name="combo1"><option value="">Select</option><option value="ac">AutoCAD Complete</option><option value="sw">SolidWorks Complete</option><option value="ansys">ANSYS Complete</option><option value="catia">CATIA V5</option><option value="creo">Creo Parametric</option><option value="f360">Fusion 360</option><option value="keyshot">KeyShot</option><option value="python">Python for Engineers</option><option value="vba">Advanced Excel / VBA</option></select></div>
         <div class="field"><label for="combo2">Second course</label><select id="combo2" name="combo2"><option value="">Select</option><option value="ac">AutoCAD Complete</option><option value="sw">SolidWorks Complete</option><option value="ansys">ANSYS Complete</option><option value="catia">CATIA V5</option><option value="creo">Creo Parametric</option><option value="f360">Fusion 360</option><option value="keyshot">KeyShot</option><option value="python">Python for Engineers</option><option value="vba">Advanced Excel / VBA</option></select></div>
       </div>
-      <div class="field" style="margin-top:14px"><label for="coupon">Coupon code (optional)</label><input id="coupon" name="coupon" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="30"><p class="hint" id="coupon-msg" style="margin-top:6px"></p></div>
       <p class="err" id="e-combo"></p>
+    </div>
+    <div id="coupon-wrap" hidden>
+      <div class="field" style="margin-top:6px"><label for="coupon">Coupon code (optional)</label><input id="coupon" name="coupon" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="30"><p class="hint" id="coupon-msg" style="margin-top:6px"></p></div>
+      <p class="err" id="e-coupon"></p>
     </div>
     <p class="err" id="e-course"></p>
   </section>
@@ -451,11 +454,14 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
     combo:  { name: "Any 2 courses", full: 7080, part: null }
   };
   /* Coupon: only the SHA-256 of the code is stored here; the server checks the real code again. */
-  var COUPON_HASH = "82e8f6918e0f57cc16c267d9428f153fa11dcb059476fdc2c14b7028d8f868a1";
-  var COUPON_FEE = 7080;
-  var couponOk = false;
+  var COUPONS = {
+    "82e8f6918e0f57cc16c267d9428f153fa11dcb059476fdc2c14b7028d8f868a1": { course: "combo", fee: 7080, qr: "qr-7080.png", label: "Any 2 courses" },
+    "2a20a54b08a8eec96df4a3f9002ff53acb7027721596489363b9ededa6da45f8": { course: "sw", fee: 6000, qr: "qr-6000.png", label: "SolidWorks Complete" }
+  };
+  var couponHit = null;
+  function activeCoupon() { return couponHit && couponHit.course === checked("course") ? couponHit : null; }
   function comboFee() {
-    if (couponOk) return COUPON_FEE;
+    var ac = activeCoupon(); if (ac) return ac.fee;
     var a = COURSES[val("combo1")], b = COURSES[val("combo2")];
     return a && b && val("combo1") !== val("combo2") ? a.full + b.full : null;
   }
@@ -463,20 +469,28 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
     var f = comboFee();
     COURSES.combo.full = f === null ? 0 : f;
     COURSES.combo.pending = f === null;
+    var ac = activeCoupon();
+    COURSES.sw.full = ac && ac.course === "sw" ? ac.fee : 7999;
   }
   function checkCoupon() {
     var raw = val("coupon").toUpperCase().replace(/\s+/g, "");
     var msg = $("coupon-msg");
-    if (!raw) { couponOk = false; msg.textContent = ""; msg.className = "hint"; updateFee(); return; }
-    if (!(window.crypto && crypto.subtle && window.TextEncoder)) { couponOk = false; msg.textContent = "Coupon will be checked when you submit."; msg.className = "hint"; updateFee(); return; }
+    if (!raw) { couponHit = null; msg.textContent = ""; msg.className = "hint"; updateFee(); return; }
+    if (!(window.crypto && crypto.subtle && window.TextEncoder)) { couponHit = null; msg.textContent = "Coupon will be checked when you submit."; msg.className = "hint"; updateFee(); return; }
     crypto.subtle.digest("SHA-256", new TextEncoder().encode(raw)).then(function (buf) {
       var hex = Array.prototype.map.call(new Uint8Array(buf), function (b) { return ("0" + b.toString(16)).slice(-2); }).join("");
       if (raw !== val("coupon").toUpperCase().replace(/\s+/g, "")) return;
-      couponOk = hex === COUPON_HASH;
-      msg.textContent = couponOk ? "Coupon applied. Any 2 courses for " + inr(COUPON_FEE) + "." : "That code is not valid.";
-      msg.className = couponOk ? "hint" : "err";
+      couponHit = COUPONS[hex] || null;
+      showCouponMsg();
       updateFee();
     });
+  }
+  function showCouponMsg() {
+    var msg = $("coupon-msg");
+    if (!val("coupon")) { msg.textContent = ""; msg.className = "hint"; return; }
+    if (!couponHit) { msg.textContent = "That code is not valid."; msg.className = "err"; return; }
+    if (couponHit.course !== checked("course")) { msg.textContent = "This code works only for " + couponHit.label + "."; msg.className = "err"; return; }
+    msg.textContent = "Coupon applied. " + couponHit.label + " for " + inr(couponHit.fee) + "."; msg.className = "hint";
   }
   var comboName = function (c) {
     var a = COURSES[val("combo1")], b = COURSES[val("combo2")];
@@ -582,13 +596,15 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
       due.textContent = "Choose a plan"; due.className = "due pending";
     }
     /* The second QR has the Rs 7,080 amount filled in, so it is only used for the coupon price on two courses paid in full. */
-    var combined = checked("course") === "combo" && plan === "full" && couponOk;
-    setQr(combined ? "qr-7080.png" : "qr.png");
+    var ac = activeCoupon();
+    setQr(ac && plan === "full" ? ac.qr : "qr.png");
   }
   $("coupon").addEventListener("input", checkCoupon);
-  form.addEventListener("reset", function () { setTimeout(function () { couponOk = false; $("coupon-msg").textContent = ""; $("combo-pick").hidden = true; updateFee(); }, 0); });
+  form.addEventListener("reset", function () { setTimeout(function () { couponHit = null; $("coupon-wrap").hidden = true; $("coupon-msg").textContent = ""; $("combo-pick").hidden = true; updateFee(); }, 0); });
   form.addEventListener("change", function () {
     $("combo-pick").hidden = checked("course") !== "combo";
+    $("coupon-wrap").hidden = !(checked("course") === "combo" || checked("course") === "sw");
+    showCouponMsg();
     updateFee();
   });
 
@@ -650,8 +666,8 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
     if (checked("course") === "combo") {
       if (!val("combo1") || !val("combo2")) mark(fail("combo", "Choose both courses.", "combo1"));
       else if (val("combo1") === val("combo2")) mark(fail("combo", "Choose two different courses.", "combo2"));
-      else if (val("coupon") && !couponOk) mark(fail("combo", "That coupon code is not valid. Clear it or check the spelling.", "coupon"));
     }
+    if ((checked("course") === "combo" || checked("course") === "sw") && val("coupon") && !activeCoupon()) mark(fail("coupon", "That coupon code is not valid for this course. Clear it or check the spelling.", "coupon"));
     if (!enq && !checked("plan")) mark(fail("plan", "Select a payment plan.", "plans"));
     if (!val("level")) mark(fail("level", "Select your experience level."));
     if (!val("software")) mark(fail("software", "Select your software status."));
@@ -730,7 +746,7 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
     compress($("shot").files[0]).then(function (b64) {
       var payload = {
         clientId: clientId, name: val("name"), phone: val("phone"), email: val("email"), city: val("city"), address: val("address"),
-        qual: val("qual"), course: checked("course"), combo1: val("combo1"), combo2: val("combo2"), coupon: (checked("course") === "combo" ? val("coupon") : ""), plan: plan,
+        qual: val("qual"), course: checked("course"), combo1: val("combo1"), combo2: val("combo2"), coupon: ((checked("course") === "combo" || checked("course") === "sw") ? val("coupon") : ""), plan: plan,
         level: val("level"), software: val("software"), slot: val("slot"),
         source: val("source"), goal: val("goal"), utr: val("utr"), shot: b64
       };
