@@ -244,6 +244,11 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
         <input type="text" id="city" name="city" autocomplete="address-level2" placeholder="Mumbai, India" required>
         <p class="err" id="e-city"></p>
       </div>
+      <div class="field" style="grid-column:1/-1">
+        <label for="address">Full address (for your invoice)</label>
+        <textarea id="address" name="address" autocomplete="street-address" rows="2" maxlength="200" placeholder="House or flat no., building, area, pin code" required style="min-height:64px"></textarea>
+        <p class="err" id="e-address"></p>
+      </div>
       <div class="field">
         <label for="qual">Current status</label>
         <select id="qual" name="qual" required>
@@ -423,7 +428,7 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
 </main>
 
 <footer>
-  NISHLAB CREATIONS · MSME REGISTERED (UDYAM) · MUMBAI · NISHLABCREATIONS.ONLINE
+  NISHLAB CREATIONS · MUMBAI · NISHLABCREATIONS.ONLINE
 </footer>
 
 <script>
@@ -638,6 +643,7 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
     if (digits.length < 10 || digits.length > 15) mark(fail("phone", "Enter a WhatsApp number with 10 to 15 digits."));
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(val("email"))) mark(fail("email", "Enter a valid email, like name@example.com."));
     if (val("city").length < 2) mark(fail("city", "Enter your city and country."));
+    if (val("address").length < 8) mark(fail("address", "Enter your full address (house or building, area, pin code)."));
     if (!val("qual")) mark(fail("qual", "Select your current status."));
     if (!checked("course")) mark(fail("course", "Select a course.", "courses"));
     var enq = false;
@@ -665,7 +671,7 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
     var lines = [
       "NISHLAB CREATIONS – ENROLLMENT", "",
       "Name: " + val("name"), "WhatsApp: " + val("phone"), "Email: " + val("email"),
-      "Location: " + val("city"), "Status: " + val("qual"), "",
+      "Location: " + val("city"), "Address: " + val("address"), "Status: " + val("qual"), "",
       "Course: " + (checked("course") === "combo" ? comboName(c) : c.name), "Payment: " + pay
     ];
     if (val("utr")) lines.push("UPI transaction ID: " + val("utr"));
@@ -723,7 +729,7 @@ input[type=file]::file-selector-button { font: inherit; font-weight: 600; margin
     var c = COURSES[checked("course")], plan = checked("plan");
     compress($("shot").files[0]).then(function (b64) {
       var payload = {
-        clientId: clientId, name: val("name"), phone: val("phone"), email: val("email"), city: val("city"),
+        clientId: clientId, name: val("name"), phone: val("phone"), email: val("email"), city: val("city"), address: val("address"),
         qual: val("qual"), course: checked("course"), combo1: val("combo1"), combo2: val("combo2"), coupon: (checked("course") === "combo" ? val("coupon") : ""), plan: plan,
         level: val("level"), software: val("software"), slot: val("slot"),
         source: val("source"), goal: val("goal"), utr: val("utr"), shot: b64
